@@ -25,5 +25,6 @@ module.exports = defineConfig({
     },
     baseUrl: "https://automationexercise.com",
     video: false,
+    reporterOptions: { allureResultsPath: 'allure-results' }
   },
 });
