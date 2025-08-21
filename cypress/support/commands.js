@@ -9,7 +9,6 @@ function getCreds() {
   return { email, password };
 }
 
-// Login UI com assert
 Cypress.Commands.add("uiLoginOnce", (email, password) => {
   cy.visit("/login");
   cy.contains("Login to your account", { timeout: 15000 }).should("be.visible");
@@ -21,7 +20,6 @@ Cypress.Commands.add("uiLoginOnce", (email, password) => {
   );
 });
 
-// Garante sessão logada (reusa com cy.session)
 Cypress.Commands.add("ensureLoggedIn", (emailArg, passwordArg) => {
   const { email, password } =
     emailArg && passwordArg
@@ -37,27 +35,22 @@ Cypress.Commands.add("ensureLoggedIn", (emailArg, passwordArg) => {
   });
 });
 
-// Adiciona o primeiro produto da lista ao carrinho (UI)
 Cypress.Commands.add("addFirstProductToCartUI", () => {
   cy.visit("/products");
   cy.contains("All Products", { timeout: 15000 }).should("be.visible");
-  // Alguns temas mostram o botão só no hover — forçamos o clique
   cy.get(".product-image-wrapper")
     .first()
     .within(() => {
       cy.contains("Add to cart").click({ force: true });
     });
-  // Modal de confirmação → seguimos comprando para só semear
   cy.contains("Continue Shopping", { timeout: 10000 }).click({ force: true });
 });
 
-// Garante que já existe item no carrinho (reusa com cy.session)
 Cypress.Commands.add("ensureCartSeeded", () => {
   const key = ["cart-seed", Cypress.env("USER_EMAIL") || "guest"];
   cy.session(
     key,
     () => {
-      // pré-requisito: estar logado ajuda a manter o carrinho na conta
       const creds = getCreds();
       cy.uiLoginOnce(creds.email, creds.password);
       cy.addFirstProductToCartUI();

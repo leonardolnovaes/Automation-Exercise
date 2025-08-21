@@ -17,10 +17,8 @@ Then("clico no primeiro resultado e adiciono ao carrinho", () => {
   cy.get(".product-image-wrapper", { timeout: 10000 })
     .first()
     .within(() => {
-      // botão "Add to cart" fica dentro do produto
       cy.contains("Add to cart").click();
     });
 
-  // Valida se modal de confirmação apareceu (se existir no fluxo do site)
   cy.contains("Added!").should("be.visible");
 });
