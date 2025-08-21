@@ -16,5 +16,5 @@ Então devo continuar autenticado
 @withItem
 Cenário: Remover item do carrinho
 Quando acesso a página do carrinho
-E removo o item
+E removo todos os itens do carrinho
 Então o carrinho deve estar vazio

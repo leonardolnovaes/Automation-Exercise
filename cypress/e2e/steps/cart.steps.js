@@ -31,21 +31,18 @@ Then("devo continuar autenticado", () => {
     if (onCheckout) {
       cy.contains("Address Details").should("be.visible"); // ajuste se necessário
     } else {
-      // fallback: ainda na home logado
       cy.contains("Logged in as", { matchCase: false }).should("be.visible");
     }
   });
 });
 
 Then("a quantidade deve ser {string}", (qtd) => {
-  // Confere a célula de quantidade na linha do primeiro item
   cy.get("tr.cart_item")
     .first()
     .within(() => {
       cy.get(".cart_quantity_input, .disabled")
         .invoke("val")
         .then((val) => {
-          // alguns temas usam input, outros texto — tentamos ambos
           if (val) {
             expect(String(val)).to.eq(qtd);
           } else {
@@ -55,15 +52,14 @@ Then("a quantidade deve ser {string}", (qtd) => {
     });
 });
 
-When("removo o item", () => {
-  // Botão de deletar/remover (ajuste se o seletor diferir)
-  cy.get(".cart_quantity_delete, .cart_delete a")
-    .first()
-    .click({ force: true });
+When("removo todos os itens do carrinho", () => {
+  cy.get(".cart_quantity_delete, .cart_delete a").each(($el) => {
+    cy.wrap($el).click({ force: true });
+  });
 });
 
+
 Then("o carrinho deve estar vazio", () => {
-  // O site geralmente exibe uma mensagem ou oculta a tabela
   cy.get("body").then(($b) => {
     if ($b.text().includes("Cart is empty")) {
       cy.contains("Cart is empty").should("be.visible");
