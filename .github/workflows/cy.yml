@@ -3,6 +3,9 @@ name: Run Cypress Tests
 on:
   workflow_dispatch:
 
+env:
+  ART_NAME: allure-results-${{ github.run_id }}    
+
 jobs:
   run-tests:
     runs-on: ubuntu-latest
@@ -25,7 +28,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-            name: allure-results-${{ github.run_id }}
+            name: ${{ env.ART_NAME }}
             path: allure-results/**
             if-no-files-found: error
 
@@ -39,7 +42,7 @@ jobs:
       - name: Download Allure Results Artifact
         uses: actions/download-artifact@v4
         with:
-          name: allure-results
+          name: ${{ env.ART_NAME }}
           path: allure-results
 
       - name: Install Allure
