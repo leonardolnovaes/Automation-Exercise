@@ -1,63 +1,111 @@
-# Projeto de Automação de Testes - Cypress + Cucumber (BDD)
+# Projeto de Automação de Testes — Cypress + Cucumber (BDD)
 
-Este repositório contém automações de testes **Web e API** utilizando **Cypress + Cucumber (BDD)** e **JavaScript**.
+## 🔗 **Relatório Allure (GitHub Pages)**
 
-## Tecnologias
+**Acesse o relatório online:**
+[https://leonardolnovaes.github.io/Automation-Exercise/](https://leonardolnovaes.github.io/Automation-Exercise/)
 
-- Cypress → Testes E2E
-- Cucumber → Cenários em BDD
-- JavaScript → Linguagem
-- @badeball/cypress-cucumber-preprocessor → Integração Cypress + Cucumber
-- esbuild → Pré-processador
+> Publicado a partir do conteúdo de `allure-report/` no branch `gh-pages`.
 
-## Estrutura de Pastas
+---
 
-```
-automation-exercise-tests/
-├── cypress/
-│   ├── e2e/
-│   │   ├── web/
-│   │   │   ├── login.feature
-│   │   │   ├── search.feature
-│   │   │   └── cart.feature
-│   │   └── api/
-│   │       └── trello.feature
-│   └── step_definitions/
-│       ├── web/
-│       │   ├── loginSteps.js
-│       │   ├── searchSteps.js
-│       │   └── cartSteps.js
-│       └── api/
-│           └── trelloSteps.js
-├── cypress.config.js
-├── package.json
-└── README.md
-```
+Automação **Web e API** usando **Cypress**, **Cucumber (BDD)** e **JavaScript**.
+
+## Stack
+
+* **Cypress** (E2E)
+* **Cucumber** via `@badeball/cypress-cucumber-preprocessor`
+* **esbuild** (pré-processador)
+* **Allure** (`@shelex/cypress-allure-plugin` + `allure-commandline`) — relatórios
+
+> `baseUrl`: `https://www.automationexercise.com`.
+
+---
+
+## Pré-requisitos
+
+* Node.js 18+
+* (Para abrir o relatório Allure localmente) **Java 8+**
+
+---
 
 ## Instalação
 
 ```bash
-git clone <url-do-repo>
-cd automation-exercise-tests
+git clone https://github.com/leonardolnovaes/Automation-Exercise.git
+cd Automation-Exercise
 npm install
 ```
 
-## Scripts
+### Credenciais para cenários logados
 
-```bash
-npm run cy:open   # Executa no modo interativo
-npm run cy:run            # Executa em headless
+Crie `cypress.env.json` (não versionado):
+
+```json
+{
+  "USER_EMAIL": "testeqa@mailinator.com",
+  "USER_PASSWORD": "Teste123!"
+}
 ```
 
-## Testes Web
+---
 
-- **Login** → Autenticação de usuário
-- **Busca** → Pesquisa de produtos
-- **Carrinho** → Adição e validação no checkout
+## Como executar
 
-## Testes API
+### Interativo (GUI)
 
-- **Trello** → GET em `https://api.trello.com/1/actions/592f11060f95a3d3d46a987a`
-  - Verifica status 200
-  - Valida campo `list.name`
+```bash
+npm run cy:open
+```
 
+### Headless
+
+```bash
+npm run cy:run
+```
+
+### Por arquivo `.feature`
+
+```bash
+npx cypress run --spec cypress/e2e/web/login.feature
+```
+
+> Hooks úteis: `@needsAuth` (sessão logada) e `@withItem` (carrinho com 1 item).
+
+---
+
+## Relatórios (Allure)
+
+### Local
+
+1. Execute os testes (gera `./allure-results`):
+
+```bash
+npm run cy:run
+```
+
+2. Gere e abra o relatório:
+
+```bash
+npm run allure:generate
+npm run allure:open
+```
+
+Pastas:
+
+* `allure-results/` → resultados brutos
+* `allure-report/`  → HTML do relatório
+
+### Online (opcional)
+
+* O conteúdo de `allure-report/` pode ser publicado no **GitHub Pages**.
+  URL pública: **[https://leonardolnovaes.github.io/Automation-Exercise/](https://leonardolnovaes.github.io/Automation-Exercise/)**
+
+---
+
+## Escopo
+
+**Web**: Login, Busca de produtos, Carrinho (visualização, checkout autenticado e remoção).
+**API**: Trello (GET ação fixa), valida `status 200` e log de `data.list.name`; cenário negativo (400/404).
+
+---

@@ -1,24 +1,27 @@
-const {
-  Given,
-  When,
-  Then,
-} = require("@badeball/cypress-cucumber-preprocessor");
+// steps/search.steps.js
+import { Given, When, Then } from "@badeball/cypress-cucumber-preprocessor";
+const { SearchSelectors: SEL } = require("../../support/selectors");
 
 Given("que estou na página inicial e clico em Products", () => {
-  cy.get("[href='/products']").click().url().should("include", "/products");
+  cy.contains(SEL.productsLink, "Products").click();
+  cy.contains("All Products", { timeout: 10000 }).should("be.visible");
 });
 
 When("pesquiso por {string}", (termo) => {
-  cy.get("#search_product").clear().type(termo);
-  cy.get("#submit_search").click();
+  cy.get(SEL.searchInput).clear().type(termo);
+  cy.get(SEL.searchButton).click();
+  cy.contains(/Searched Products/i, { timeout: 10000 }).should("be.visible");
 });
 
 Then("clico no primeiro resultado e adiciono ao carrinho", () => {
-  cy.get(".product-image-wrapper", { timeout: 10000 })
+  cy.get(SEL.productWrapper, { timeout: 10000 })
     .first()
     .within(() => {
-      cy.contains("Add to cart").click();
+      cy.contains(/Add to cart/i).click();
     });
 
-  cy.contains("Added!").should("be.visible");
+  // Modal aparece após adicionar
+  cy.contains(/Added|Product added/i, { timeout: 10000 }).should("be.visible");
+  cy.contains(/Continue Shopping/i, { timeout: 10000 }).click();
+  cy.get(SEL.searchInput).should("be.visible");
 });

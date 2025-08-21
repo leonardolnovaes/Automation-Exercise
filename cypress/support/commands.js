@@ -1,40 +1,36 @@
-// Credenciais vêm de cypress.env.json ou --env
+// cypress/support/commands.js
+
+// Utilitário simples para pegar credenciais
 function getCreds() {
   const email = Cypress.env("USER_EMAIL");
   const password = Cypress.env("USER_PASSWORD");
-  if (!email || !password)
+  if (!email || !password) {
     throw new Error(
-      "Defina USER_EMAIL e USER_PASSWORD (cypress.env.json ou --env)."
+      "Defina USER_EMAIL e USER_PASSWORD em cypress.env.json ou --env"
     );
+  }
   return { email, password };
 }
 
+// Login normal (uma vez)
 Cypress.Commands.add("uiLoginOnce", (email, password) => {
   cy.visit("/login");
-  cy.contains("Login to your account", { timeout: 15000 }).should("be.visible");
+  cy.contains("Login to your account").should("be.visible");
   cy.get("[data-qa='login-email']").clear().type(email);
   cy.get("[data-qa='login-password']").clear().type(password, { log: false });
   cy.get("[data-qa='login-button']").click();
-  cy.contains("Logged in as", { matchCase: false, timeout: 15000 }).should(
-    "be.visible"
-  );
+  cy.contains("Logged in as").should("be.visible");
 });
 
-Cypress.Commands.add("ensureLoggedIn", (emailArg, passwordArg) => {
-  const { email, password } =
-    emailArg && passwordArg
-      ? { email: emailArg, password: passwordArg }
-      : getCreds();
-  cy.session(["ui-login", email], () => cy.uiLoginOnce(email, password), {
-    validate() {
-      cy.visit("/");
-      cy.contains("Logged in as", { matchCase: false, timeout: 15000 }).should(
-        "be.visible"
-      );
-    },
+// Login reaproveitando sessão (Cypress v12+)
+Cypress.Commands.add("ensureLoggedIn", () => {
+  const { email, password } = getCreds();
+  cy.session([email], () => {
+    cy.uiLoginOnce(email, password);
   });
 });
 
+// Adiciona o primeiro produto ao carrinho
 Cypress.Commands.add("addFirstProductToCartUI", () => {
   cy.visit("/products");
   cy.contains("All Products", { timeout: 15000 }).should("be.visible");

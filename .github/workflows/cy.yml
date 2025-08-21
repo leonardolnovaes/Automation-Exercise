@@ -13,20 +13,21 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Install Dependencies
         run: npm install
 
       - name: Run Cypress Tests
-        run: npm run cy:run   # roda todos os testes (web + api)
+        run: npm run cy:run # roda todos os testes (web + api)
 
       - name: Save Allure Results as Artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results
-          path: allure-results
+            name: allure-results-${{ github.run_id }}
+            path: allure-results/**
+            if-no-files-found: error
 
   generate-report:
     needs: run-tests
@@ -57,5 +58,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: allure-report
-          commit_message: 'Deploy Allure Report'
+          commit_message: "Deploy Allure Report"
           keep_files: true
