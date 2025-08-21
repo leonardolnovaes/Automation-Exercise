@@ -1,5 +1,6 @@
 // cypress.config.js
 const { defineConfig } = require("cypress");
+const allureWriter = require("@shelex/cypress-allure-plugin/writer");
 const createBundler = require("@bahmutov/cypress-esbuild-preprocessor");
 const {
   addCucumberPreprocessorPlugin,
@@ -14,17 +15,15 @@ module.exports = defineConfig({
     supportFile: "cypress/support/e2e.js",
     async setupNodeEvents(on, config) {
       await addCucumberPreprocessorPlugin(on, config);
+      allureWriter(on, config);
       on(
         "file:preprocessor",
         createBundler({ plugins: [createEsbuildPlugin(config)] })
       );
+
       return config;
     },
     baseUrl: "https://automationexercise.com",
     video: false,
-  },
-  env: {
-    allure: true,
-    allureResults: "allure-results", 
   },
 });
