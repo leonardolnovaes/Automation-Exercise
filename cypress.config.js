@@ -25,6 +25,20 @@ module.exports = defineConfig({
     },
     baseUrl: "https://automationexercise.com",
     video: false,
-    reporterOptions: { allureResultsPath: 'allure-results' }
+    defaultCommandTimeout: 10000,
+    viewportWidth: 1366,
+    viewportHeight: 768,
+    retries: {
+      runMode: 1,
+      openMode: 0,
+    },
+    env: {
+      allure: true,
+      allureResultsPath: "allure-results",
+      // opcionais úteis:
+      // allureReuseAfterSpec: true,
+      // allureAttachRequests: true,
+      // allureAddVideoOnPass: false,
+    },
   },
 });

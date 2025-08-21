@@ -1,33 +1,21 @@
 {
   "name": "automation-exercise",
   "version": "1.0.0",
-  "description": "```markdown\r # 🚀 Projeto de Automação de Testes - Cypress + Cucumber (BDD)",
-  "main": "index.js",
   "scripts": {
-    "cy:run": "cypress run --env allure=true",
+    "cy:run": "cypress run",              
     "cy:open": "cypress open",
     "allure:generate": "allure generate allure-results --clean -o allure-report",
     "allure:open": "allure open allure-report"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/leonardolnovaes/Automation-Exercise.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/leonardolnovaes/Automation-Exercise/issues"
-  },
-  "homepage": "https://github.com/leonardolnovaes/Automation-Exercise#readme",
   "devDependencies": {
     "@badeball/cypress-cucumber-preprocessor": "^22.2.0",
     "@bahmutov/cypress-esbuild-preprocessor": "^2.2.5",
     "@shelex/cypress-allure-plugin": "^2.41.2",
+    "allure-commandline": "^2.29.0",
     "cypress": "^14.5.4",
     "esbuild": "^0.25.9"
   },
   "cypress-cucumber-preprocessor": {
-    "stepDefinitions": "cypress/e2e/steps/**.steps.js"
+    "stepDefinitions": "cypress/e2e/steps/**/*.steps.js"
   }
 }

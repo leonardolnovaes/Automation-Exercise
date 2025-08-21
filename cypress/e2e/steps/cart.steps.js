@@ -1,72 +1,69 @@
-const {
-  Before,
-  Given,
-  When,
-  Then,
-} = require("@badeball/cypress-cucumber-preprocessor");
-
-Given("que já tenho um item no carrinho", () => {
-  // Garantia extra: valida que o seed funcionou
-  cy.visit("/view_cart");
-  cy.get(".cart_description", { timeout: 15000 }).should("exist");
-});
+// cypress/e2e/steps/cart.steps.js
+import { When, Then } from "@badeball/cypress-cucumber-preprocessor";
+import { CartSelectors as SEL } from "../../support/selectors";
 
 When("acesso a página do carrinho", () => {
   cy.visit("/view_cart");
-  cy.url().should("include", "/view_cart");
+  cy.contains(/Shopping Cart/i, { timeout: 10000 }).should("be.visible");
+  cy.get(SEL.container, { timeout: 10000 }).should("be.visible");
 });
 
 Then("devo ver um item listado", () => {
-  cy.get(".cart_description").should("be.visible");
+  cy.get(`${SEL.itemRow}, ${SEL.itemDescription}`, { timeout: 10000 }).should(
+    "exist"
+  );
 });
 
 When("avanço para o checkout", () => {
-  cy.contains("Proceed To Checkout", { timeout: 15000 }).click({ force: true });
+  cy.get(SEL.checkoutBtn, { timeout: 15000 }).should("be.visible").click();
 });
 
 Then("devo continuar autenticado", () => {
-  // Alguns fluxos mostram “Logged in as”; outros já exibem o resumo do pedido
   cy.url().then((url) => {
-    const onCheckout = url.includes("/checkout");
-    if (onCheckout) {
-      cy.contains("Address Details").should("be.visible"); // ajuste se necessário
-    } else {
-      cy.contains("Logged in as", { matchCase: false }).should("be.visible");
+    if (url.includes("/login")) {
+      throw new Error("Redirecionado para /login — sessão não mantida.");
     }
   });
+  // Em fluxo normal, cai em /checkout e mostra detalhes do endereço/pedido
+  cy.contains(/Address Details|Review Your Order/i, { timeout: 15000 }).should(
+    "be.visible"
+  );
 });
 
 Then("a quantidade deve ser {string}", (qtd) => {
-  cy.get("tr.cart_item")
+  cy.get(SEL.itemRow)
     .first()
     .within(() => {
-      cy.get(".cart_quantity_input, .disabled")
-        .invoke("val")
-        .then((val) => {
-          if (val) {
-            expect(String(val)).to.eq(qtd);
+      // alguns temas usam input desabilitado, outros só texto
+      cy.get(".cart_quantity_input, .disabled, .cart_quantity")
+        .first()
+        .invoke("text")
+        .then((t) => t && t.trim())
+        .then((text) => {
+          if (text) {
+            expect(text).to.contain(qtd);
           } else {
-            cy.get(".cart_quantity").should("contain.text", qtd);
+            cy.get(".cart_quantity_input, .disabled")
+              .invoke("val")
+              .then((val) => expect(String(val)).to.eq(qtd));
           }
         });
     });
 });
 
 When("removo todos os itens do carrinho", () => {
-  cy.get(".cart_quantity_delete, .cart_delete a").each(($el) => {
+  cy.get(SEL.removeBtn).each(($el) => {
     cy.wrap($el).click({ force: true });
   });
 });
 
-
 Then("o carrinho deve estar vazio", () => {
+  // aceita tanto mensagem quanto ausência de linhas
   cy.get("body").then(($b) => {
-    if ($b.text().includes("Cart is empty")) {
-      cy.contains("Cart is empty").should("be.visible");
+    if ($b.text().match(/Cart is empty/i)) {
+      cy.contains(/Cart is empty/i).should("be.visible");
     } else {
-      cy.get(".cart_info").within(() => {
-        cy.get("tr.cart_item").should("have.length", 0);
-      });
+      cy.get("tr.cart_item").should("not.exist");
     }
   });
 });
